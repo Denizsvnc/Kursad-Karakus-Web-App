@@ -941,54 +941,49 @@ li {
 	font-size: 2.7em;
 	line-height: 0.7;
 	}
- .m1 {
-	padding-top: 5px;
-	float: left;
-	font-size: 1.5em;
-	
-	z-index: -10;
+
+	/* Mobil Header - Flexbox ile düzenli yerleşim */
+	.mainHeader {
+		display: flex !important;
+		flex-wrap: nowrap !important;
+		align-items: center !important;
+		justify-content: space-between !important;
+		padding: 12px 15px !important;
+		min-height: 60px !important;
+		height: auto !important;
 	}
 
-	.m2 {
-	padding-top: 5px;
-	clear: left;
-	float: left;
-	padding-left: 0px;
-	z-index: -11;
+	.m1 {
+		padding: 0 !important;
+		float: none !important;
+		font-size: 1.2em;
+		flex-shrink: 0;
+		order: 1;
 	}
 
-	.m3 {
-	float: left;
-	padding-top: 5px;
-	z-index: -12;
-	padding-left: 10px;
-	}
-
-	.m4, .m5, .m8, .m9, .m10, .m11, .m12, .m13, .m14, .m15 {
-		display: none; /* Hamburger menüde gösterilecek */
+	/* Mobilde tüm kategoriler hamburger menüde */
+	.m2, .m3, .m4, .m5, .m8, .m9, .m10, .m11, .m12, .m13, .m14, .m15 {
+		display: none !important;
 	}
 
 	.m-hamburger {
-		padding-top: 5px;
-		float: left;
-		padding-left: 10px;
-		z-index: 10;
-		display: block;
+		display: flex !important;
 		align-items: center;
+		padding: 0 !important;
+		float: none !important;
+		order: 2;
+		margin-left: 15px;
 	}
 
 	.m6 {
-	float: left;
-	padding-top: 5px;
-	z-index: -15;
-	padding-left: 10px;
+		display: none !important; /* Mobilde info hamburger menüde */
 	}
 
 	.m7 {
-	padding-top: 5px;
-	float: right;
-	padding-right: 0px;
-	z-index: 10;
+		padding: 0 !important;
+		float: none !important;
+		margin-left: auto;
+		order: 3;
 	}
 
 	/* Hamburger Menu Styles */
@@ -1189,16 +1184,9 @@ and (orientation : landscape) {
 	z-index: -11;
 	}
 
-	.m3 {
-	
-	float: left;
-	padding-top: 5px;
-	z-index: -12;
-	padding-left: 10px;
-	}
-
-	.m4, .m5, .m8, .m9, .m10, .m11, .m12, .m13, .m14, .m15 {
-		display: none; /* Hamburger menüde gösterilecek */
+	/* Mobilde tüm kategoriler hamburger menüde */
+	.m2, .m3, .m4, .m5, .m8, .m9, .m10, .m11, .m12, .m13, .m14, .m15 {
+		display: none !important;
 	}
 
 	.m-hamburger {
@@ -1325,16 +1313,9 @@ and (orientation : landscape) {
 	z-index: -11;
 	}
 
-	.m3 {
-	
-	float: left;
-	padding-top: 5px;
-	z-index: -12;
-	padding-left: 10px;
-	}
-
-	.m4, .m5, .m8, .m9, .m10, .m11, .m12, .m13, .m14, .m15 {
-		display: none; /* Hamburger menüde gösterilecek */
+	/* Mobilde tüm kategoriler hamburger menüde */
+	.m2, .m3, .m4, .m5, .m8, .m9, .m10, .m11, .m12, .m13, .m14, .m15 {
+		display: none !important;
 	}
 
 	.m-hamburger {

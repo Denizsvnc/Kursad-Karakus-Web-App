@@ -112,7 +112,7 @@ if (isset($pdo)) {
                 SELECT c.*, COUNT(DISTINCT p.id) as project_count 
                 FROM categories c 
                 LEFT JOIN projects p ON (p.category_id = c.id OR p.category = c.slug)
-                GROUP BY c.id, c.name, c.slug, c.description, c.display_order
+                GROUP BY c.id
                 HAVING project_count > 0
                 ORDER BY c.display_order ASC, c.name ASC
             ");
@@ -121,12 +121,16 @@ if (isset($pdo)) {
             if (!empty($dbCategories)) {
                 $classIndex = 2; // m2'den başla
                 foreach ($dbCategories as $cat) {
-                    // Çeviri anahtarı oluştur
+                    // Dil seçimine göre kategori adını belirle
+                    $categoryName = $cat['name']; // Varsayılan Türkçe
+                    if ($currentLang === 'en' && !empty($cat['en_name'])) {
+                        $categoryName = $cat['en_name'];
+                    }
+                    // Eğer veritabanında yoksa çeviri dosyasından dene
                     $translationKey = 'nav.' . $cat['slug'];
-                    $categoryName = t($translationKey);
-                    // Eğer çeviri yoksa kategori adını kullan
-                    if ($categoryName === $translationKey) {
-                        $categoryName = $cat['name'];
+                    $translatedName = t($translationKey);
+                    if ($translatedName !== $translationKey) {
+                        $categoryName = $translatedName;
                     }
                     
                     // Sayfa dosyası varsa direkt kullan, yoksa category.php ile dinamik göster
@@ -186,20 +190,14 @@ if (isset($pdo)) {
     }
 }
 
-// Toplam link sayısı: Home(1) + Kategoriler + Info(1) + Language(1)
-$totalLinks = 1 + count($allMenuLinks) + 2;
-// Hamburger menüyü daha erken aktif hale getir (1'den fazla kategori varsa)
+// Hamburger menüyü aktif yap (1'den fazla kategori varsa)
 $useHamburger = count($allMenuLinks) > 1;
 
-// Hamburger menüye gidecek linkler (1'den fazla kategori varsa)
-if ($useHamburger && count($allMenuLinks) > 0) {
-    // İlk 1 kategori linkini görünür yap, geri kalanını hamburger'e
-    $displayLinks = array_slice($allMenuLinks, 0, 1);
-    $hamburgerLinks = array_slice($allMenuLinks, 1);
-} else {
-    $displayLinks = $allMenuLinks;
-    $hamburgerLinks = [];
-}
+// Masaüstünde ilk 1 kategori görünür, mobilde tümü hamburger'de
+$displayLinks = array_slice($allMenuLinks, 0, 1);
+$hamburgerLinks = array_slice($allMenuLinks, 1);
+// Mobil için tüm kategoriler hamburger'de olacak
+$mobileHamburgerLinks = $allMenuLinks;
 ?>
 <div class="container"> 
 <header class="mainHeader">
@@ -244,9 +242,10 @@ if ($useHamburger && count($allMenuLinks) > 0) {
 			</button>
 		</div>
 		<nav class="mobile-menu-nav">
-			<?php foreach ($hamburgerLinks as $link): ?>
+			<?php foreach ($mobileHamburgerLinks as $link): ?>
 				<a href="<?php echo $link['url']; ?>" class="mobile-menu-link"><?php echo $link['text']; ?></a>
 			<?php endforeach; ?>
+			<a href="info.php" class="mobile-menu-link"><?php echo t('nav.info'); ?></a>
 		</nav>
 	</div>
 </div>
