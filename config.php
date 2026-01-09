@@ -3,23 +3,32 @@
 // 1. VERİTABANI VE ORTAM AYARLARI (Railway & Localhost Uyumlu)
 // --------------------------------------------------------------------------
 
-// Railway'den gelen verileri kontrol et, yoksa (??) Localhost varsayılanlarını kullan
-// Bu sayede hem bilgisayarında hem sunucuda kod değiştirmeden çalışır.
-define('DB_HOST', $_ENV['MYSQLHOST'] ?? 'localhost');
-define('DB_USER', $_ENV['MYSQLUSER'] ?? 'root');
-define('DB_PASS', $_ENV['MYSQLPASSWORD'] ?? '');
-define('DB_NAME', $_ENV['MYSQLDATABASE'] ?? 'kursad_portfolio');
-define('DB_PORT', $_ENV['MYSQLPORT'] ?? '3306'); // Railway için Port ayarı şarttır
+// $_ENV yerine getenv() kullanıyoruz. Bu yöntem Railway üzerinde çok daha kararlıdır.
+// getenv() false dönerse (yani Railway'de değilsek) 'localhost' kullanılır.
+
+$dbHost = getenv('MYSQLHOST');
+define('DB_HOST', $dbHost !== false ? $dbHost : 'localhost');
+
+$dbUser = getenv('MYSQLUSER');
+define('DB_USER', $dbUser !== false ? $dbUser : 'root');
+
+$dbPass = getenv('MYSQLPASSWORD');
+define('DB_PASS', $dbPass !== false ? $dbPass : '');
+
+$dbName = getenv('MYSQLDATABASE');
+define('DB_NAME', $dbName !== false ? $dbName : 'kursad_portfolio');
+
+$dbPort = getenv('MYSQLPORT');
+define('DB_PORT', $dbPort !== false ? $dbPort : '3306');
 
 // Site URL Ayarı (Otomatik Algılama)
 $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";
 $domain = $_SERVER['HTTP_HOST'];
 
-// Eğer localhost'taysak klasör adını ekle, değilse (Railway) ana dizini al
 if (strpos($domain, 'localhost') !== false) {
-    define('SITE_URL', $protocol . "://" . $domain . '/kursad'); // XAMPP Klasörün
+    define('SITE_URL', $protocol . "://" . $domain . '/kursad');
 } else {
-    define('SITE_URL', $protocol . "://" . $domain); // Railway Ana Dizin
+    define('SITE_URL', $protocol . "://" . $domain);
 }
 
 define('ADMIN_URL', SITE_URL . '/admin');
