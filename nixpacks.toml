@@ -1,0 +1,15 @@
+# Railway'e PHP kullanacağımızı söylüyoruz
+providers = ["php"]
+
+# Gerekli sistem paketlerini ve eklentileri zorla yüklüyoruz
+[phases.setup]
+nixPkgs = [
+    "php",
+    "php82Extensions.pdo",
+    "php82Extensions.pdo_mysql",
+    "php82Extensions.mysqli",
+    "git"
+]
+
+[phases.build]
+cmds = ["composer install"]
