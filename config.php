@@ -21,8 +21,15 @@ define('DB_NAME', $dbName !== false ? $dbName : 'kursad_portfolio');
 $dbPort = getenv('MYSQLPORT');
 define('DB_PORT', $dbPort !== false ? $dbPort : '3306');
 
-// Site URL Ayarı (Otomatik Algılama)
-$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";
+// Site URL Ayarı (Railway & Load Balancer Uyumlu)
+if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+    $protocol = 'https';
+} elseif (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+    $protocol = 'https';
+} else {
+    $protocol = 'http';
+}
+
 $domain = $_SERVER['HTTP_HOST'];
 
 if (strpos($domain, 'localhost') !== false) {
