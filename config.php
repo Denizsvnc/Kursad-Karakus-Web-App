@@ -1,13 +1,32 @@
 <?php
-// Veritabanı bağlantı ayarları
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'kursad_portfolio');
+// --------------------------------------------------------------------------
+// 1. VERİTABANI VE ORTAM AYARLARI (Railway & Localhost Uyumlu)
+// --------------------------------------------------------------------------
 
-// Site ayarları
-define('SITE_URL', 'http://localhost/kursad');
+// Railway'den gelen verileri kontrol et, yoksa (??) Localhost varsayılanlarını kullan
+// Bu sayede hem bilgisayarında hem sunucuda kod değiştirmeden çalışır.
+define('DB_HOST', $_ENV['MYSQLHOST'] ?? 'localhost');
+define('DB_USER', $_ENV['MYSQLUSER'] ?? 'root');
+define('DB_PASS', $_ENV['MYSQLPASSWORD'] ?? '');
+define('DB_NAME', $_ENV['MYSQLDATABASE'] ?? 'kursad_portfolio');
+define('DB_PORT', $_ENV['MYSQLPORT'] ?? '3306'); // Railway için Port ayarı şarttır
+
+// Site URL Ayarı (Otomatik Algılama)
+$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";
+$domain = $_SERVER['HTTP_HOST'];
+
+// Eğer localhost'taysak klasör adını ekle, değilse (Railway) ana dizini al
+if (strpos($domain, 'localhost') !== false) {
+    define('SITE_URL', $protocol . "://" . $domain . '/kursad'); // XAMPP Klasörün
+} else {
+    define('SITE_URL', $protocol . "://" . $domain); // Railway Ana Dizin
+}
+
 define('ADMIN_URL', SITE_URL . '/admin');
+
+// --------------------------------------------------------------------------
+// 2. TEMEL AYARLAR VE BAĞLANTI
+// --------------------------------------------------------------------------
 
 // Session başlat
 if (session_status() === PHP_SESSION_NONE) {
@@ -16,7 +35,10 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Veritabanı bağlantısı
 try {
-    $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4", DB_USER, DB_PASS);
+    // Railway için 'port=' parametresi eklendi
+    $dsn = "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";charset=utf8mb4";
+    
+    $pdo = new PDO($dsn, DB_USER, DB_PASS);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 } catch(PDOException $e) {
@@ -26,7 +48,7 @@ try {
             die("
                 <div style='font-family: Arial; padding: 40px; text-align: center;'>
                     <h2 style='color: #e74c3c;'>Veritabanı Bulunamadı</h2>
-                    <p>Veritabanı henüz oluşturulmamış. Lütfen önce kurulumu yapın.</p>
+                    <p>Veritabanı (" . DB_NAME . ") bulunamadı. Lütfen kurulumu yapın.</p>
                     <a href='setup.php' style='display: inline-block; padding: 12px 24px; background: #3498db; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px;'>
                         Kurulumu Başlat
                     </a>
@@ -37,6 +59,10 @@ try {
     // Diğer hatalar için normal mesaj
     die("Veritabanı bağlantı hatası: " . $e->getMessage());
 }
+
+// --------------------------------------------------------------------------
+// 3. FONKSİYONLAR
+// --------------------------------------------------------------------------
 
 // Admin kontrolü
 function isAdmin() {
@@ -350,4 +376,3 @@ function updateManifestJson() {
     return true;
 }
 ?>
-
